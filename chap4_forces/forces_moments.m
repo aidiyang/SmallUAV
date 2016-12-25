@@ -19,7 +19,7 @@
 % 修改说明:
 % 2016.10.22 : 改进了变形函道发动机对机体力矩的表达式.
 % 2016.10.25
-%
+
 function out = forces_moments(x, delta, wind, P)
 
     % relabel the inputs

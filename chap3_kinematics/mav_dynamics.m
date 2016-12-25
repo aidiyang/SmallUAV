@@ -118,7 +118,7 @@ simStateCompliance = 'UnknownSimState';
 % Return the derivatives for the continuous states.
 %=============================================================================
 %
-function sys=mdlDerivatives(t,x,uu, P)
+function sys=mdlDerivatives(t,x,uu,P)
 
     pn    = x(1);
     pe    = x(2);
