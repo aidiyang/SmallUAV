@@ -19,6 +19,7 @@
 % 修改说明:
 % 2016.10.22 : 改进了变形函道发动机对机体力矩的表达式.
 % 2016.10.25
+% 2017.01.07 : 程序现在仿真是不通的，是因为现在的版本加入了变机构的矢量推进设备，需要修改输入输出。
 
 function out = forces_moments(x, delta, wind, P)
 
@@ -39,7 +40,7 @@ function out = forces_moments(x, delta, wind, P)
     delta_a = delta(2);
     delta_r = delta(3);
     delta_t = delta(4);
-    %Ducted fan engine---
+    %Ducted fan engine---针对EDI VTOL仿真加入
     F1      = delta(5);
     F2      = delta(6);
     F3      = delta(7);
