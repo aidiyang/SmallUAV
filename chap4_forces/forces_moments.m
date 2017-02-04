@@ -41,10 +41,10 @@ function out = forces_moments(x, delta, wind, P)
     delta_r = delta(3);
     delta_t = delta(4);
     %Ducted fan engine---针对EDI VTOL仿真加入
-    F1      = delta(5);
-    F2      = delta(6);
-    F3      = delta(7);
-    F4      = delta(8);
+%     F1      = delta(5);
+%     F2      = delta(6);
+%     F3      = delta(7);
+%     F4      = delta(8);
     %------------------------
     w_ns    = wind(1); % steady wind - North
     w_es    = wind(2); % steady wind - East
@@ -70,7 +70,10 @@ function out = forces_moments(x, delta, wind, P)
     T31=cos(phi)*sin(theta)*cos(psi) + sin(phi)*sin(psi);   %T31=C13
     T32=cos(phi)*sin(theta)*sin(psi) - sin(phi)*cos(psi);   %T32=C23
     T33=cos(phi)*cos(theta);        %T33=C33
-%   Cbn=[T11,T12,T13;T21,T22,T23;T31,T32,T33]          %Cbn=Cnb'
+    %%% 导航系-》机体系
+    Cbn=[T11,T12,T13;T21,T22,T23;T31,T32,T33]
+    %%% 机体系-》导航系
+    Cnb=Cbn'
 %-----------------------------------------------------    
     %计算：机体系下的风速=Cbn*导航系下恒风+机体系下随机风（阵风）
     u_w = T11*w_ns + T12*w_es + T13*w_ds + u_wg;
@@ -114,13 +117,13 @@ function out = forces_moments(x, delta, wind, P)
     f_py = 0;
     f_pz = 0;
     
-  %4 Ducted fan engine 1~4 gamma 
-  %%四个发动机的
-    f_Fx = (F1 + F2 + F3 + F4) * cos(gamma);
-    f_Fy = 0;
-    f_Fz = (F1 + F2 + F3 + F4) * sin(gamma);
-    
-  %total forces = gravity + aerodynamic + Propell Thrust  
+%   %4 Ducted fan engine 1~4 gamma 
+%   %%四个发动机的
+%     f_Fx = (F1 + F2 + F3 + F4) * cos(gamma);
+%     f_Fy = 0;
+%     f_Fz = (F1 + F2 + F3 + F4) * sin(gamma);
+%     
+%   %total forces = gravity + aerodynamic + Propell Thrust  
     Force(1) =  f_gx + f_ax + f_px + f_Fx;
     Force(2) =  f_gy + f_ay + f_py + f_Fy; 
     Force(3) =  f_gz + f_az + f_pz + f_Fz;
@@ -137,11 +140,12 @@ function out = forces_moments(x, delta, wind, P)
     m_pm = 0;
     m_pn = 0;
  
-  %3. Ducted fan engine Torque 
-    Torque_F_roll = (F2+F3-F1-F4) * P.D * cos(gamma) + P.c_Q/P.c_F * (F1+F3-F2-F4)*sin(gamma);
-    Torque_F_picth = P.L * sqrt((1+cos(2*gamma))^2+(sin(2*gamma))^2) * (F1+F2-(F3+F4)...
-                                        *sin(atan(1+cos(2*gamma)/sin(2*gamma) - gamma)));
-    Torque_F_yaw  = (F2+F3-F1-F4) * P.D * sin(gamma) + P.c_Q/P.c_F * (F1+F3-F2-F4)*cos(gamma);
+%   %3. Ducted fan engine Torque 
+%     Torque_F_roll = (F2+F3-F1-F4) * P.D * cos(gamma) + P.c_Q/P.c_F * (F1+F3-F2-F4)*sin(gamma);
+%     Torque_F_picth = P.L * sqrt((1+cos(2*gamma))^2+(sin(2*gamma))^2) * (F1+F2-(F3+F4)...
+%                                         *sin(atan(1+cos(2*gamma)/sin(2*gamma) - gamma)));
+%     Torque_F_yaw  = (F2+F3-F1-F4) * P.D * sin(gamma) + P.c_Q/P.c_F * (F1+F3-F2-F4)*cos(gamma);
+
   %total Torque = aerodynamic Torque + Propell Torque    
     Torque(1) = ell + m_pl + Torque_F_roll;
     Torque(2) = m   + m_pm + Torque_F_picth;   
