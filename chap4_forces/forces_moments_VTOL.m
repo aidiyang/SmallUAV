@@ -11,17 +11,17 @@
 %-------------------------------------------------------
 % by Edisonyang  Date:2016.09.03
 %
-% 算法来源：飞行器动力学模型
-% NOTE: 完成了飞行器外部受力和力矩的方程。
-%       其中:1.不同的飞机（固定翼和飞翼的，空气动力学参数不同，估计和没有垂尾有关系）
-%           2.关于涵道发动机部分的建模后面要加进来。对涵道的力学建模问题像螺旋桨一样
-%             利用贝努力方程分析来流和去流进行建模
-% 修改说明:
-% 2016.10.22 : 改进了变形函道发动机对机体力矩的表达式.
+% ?????????????
+% NOTE: ?????????????????
+%       ??:1.???????????????????????????????????
+%           2.???????????????????????????????????
+%             ??????????????????
+% ????:
+% 2016.10.22 : ???????????????????.
 % 2016.10.25
-% 2017.01.07 : 程序现在仿真是不通的，是因为现在的版本加入了变机构的矢量推进设备，需要修改输入输出。
+% 2017.01.07 : ??????????????????????????????????????????
 
-function out = forces_moments(x, delta, wind, P)
+function out = forces_moments_VTOL(x, delta, wind, P)
 
     % relabel the inputs
     pn      = x(1);
@@ -40,7 +40,7 @@ function out = forces_moments(x, delta, wind, P)
     delta_a = delta(2);
     delta_r = delta(3);
     delta_t = delta(4);
-    %Ducted fan engine---针对EDI VTOL仿真加入
+    %Ducted fan engine---??EDI VTOL????
     F1      = delta(5);
     F2      = delta(6);
     F3      = delta(7);
@@ -54,13 +54,13 @@ function out = forces_moments(x, delta, wind, P)
     w_wg    = wind(6); % gust along body z-axis
     
     % compute wind data in NED   //20160831 EDISONYANG
-    % NED系下的风速＝NED系下稳定风速＋Cnb＊机体系下的风噪声
+    % NED??????NED???????Cnb?????????
     w_n = w_ns+u_wg;
     w_e = w_es+v_wg;
     w_d = w_ds+w_wg;
     
 %-----------------------------------------------------    
-    %%% 导航系-》机体系
+    %%% ???-????
     T11=cos(theta)*cos(psi);        %T11=C11
     T12=cos(theta)*sin(psi);        %T12=C21
     T13=-sin(theta);                %T13=C31
@@ -72,12 +72,12 @@ function out = forces_moments(x, delta, wind, P)
     T33=cos(phi)*cos(theta);        %T33=C33
 %   Cbn=[T11,T12,T13;T21,T22,T23;T31,T32,T33]          %Cbn=Cnb'
 %-----------------------------------------------------    
-    %计算：机体系下的风速=Cbn*导航系下恒风+机体系下随机风（阵风）
+    %??????????=Cbn*??????+???????????
     u_w = T11*w_ns + T12*w_es + T13*w_ds + u_wg;
     v_w = T21*w_ns + T22*w_es + T23*w_ds + v_wg;
     w_w = T31*w_ns + T32*w_es + T33*w_ds + w_wg;
     
-    %计算：机体系下的空速=机系下飞机速度 - 机体系下风速
+    %??????????=??????? - ??????
     u_r = u - u_w;
     v_r = v - v_w;
     w_r = w - w_w;
@@ -95,7 +95,7 @@ function out = forces_moments(x, delta, wind, P)
     f_gz = P.mss * P.gravity * cos(theta) * cos(phi);
     
   %2. Aerodynamic Forces in body frame
-    % parameter of Aerodynamic Forces  %定义中间变量
+    % parameter of Aerodynamic Forces  %??????
     C_X_alpha = - P.C_D_alpha * cos(alpha) + P.C_L_alpha * sin(alpha);  %define
     C_X_q_alpha = -P.C_D_q * cos(alpha) + P.C_L_q *sin(alpha);
     C_X_delta_e_alpha = -P.C_D_delta_e * cos(alpha) + P.C_L_delta_e * sin(alpha);
@@ -115,7 +115,7 @@ function out = forces_moments(x, delta, wind, P)
     f_pz = 0;
     
   %4 Ducted fan engine 1~4 gamma 
-  %%四个发动机的
+  %%??????
     f_Fx = (F1 + F2 + F3 + F4) * cos(gamma);
     f_Fy = 0;
     f_Fz = (F1 + F2 + F3 + F4) * sin(gamma);

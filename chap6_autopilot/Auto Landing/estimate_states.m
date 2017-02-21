@@ -2,7 +2,7 @@
 %   - estimate the MAV states using gyros, accels, pressure sensors, and
 %   GPS.
 %
-% Outputs are:  (xhat 表示状态的最优估计值，这个表示来自估计值是x尖尖，带个帽子-hat)
+% Outputs are:  (xhat ??????????????????????????????????????????x??????????????-hat)
 %   pnhat    - estimated North position, 
 %   pehat    - estimated East position, 
 %   hhat     - estimated altitude, 
@@ -23,7 +23,7 @@
 % 
 % Modified:  3/15/2010 - RB
 %            5/18/2010 - RB
-%            2017/1/20 - Edison Yang    注释
+%            2017/1/20 - Edison Yang    ????  
 
 function xhat = estimate_states(uu, P)
 
@@ -38,14 +38,14 @@ function xhat = estimate_states(uu, P)
    y_diff_pres   = uu(8);
    defl1         = uu(9);
    defl2         = uu(10);
-   defl3         = uu(11);   %uu(1~11)传感器输出
+   defl3         = uu(11);   %uu(1~11)??????????
    y_gps_n       = uu(12);
    y_gps_e       = uu(13);
    y_gps_h       = uu(14);
    y_gps_Vg      = uu(15);
    y_gps_course  = uu(16);
    t             = uu(17);
-   %   采用卡尔曼滤波估计状态   prev(previously)         %定义变量
+   %   ??????????????????????   prev(previously)         %????????
     persistent y_gps_nprev
     persistent y_gps_eprev
     persistent y_static_presprev
@@ -61,7 +61,7 @@ function xhat = estimate_states(uu, P)
     persistent Patt
     persistent Pgps
     persistent gpsPers
-   if t==0                                           %初始化
+   if t==0                                           %??????
        y_gps_nprev=0;
        y_gps_eprev=0;
        y_static_presprev=0;
@@ -86,7 +86,7 @@ function xhat = estimate_states(uu, P)
    Ngps=20;
    Toutgps=P.Ts;
   
-    % not estimating these states               %攻角、侧滑角和零偏没有估计
+    % not estimating these states               %??????????????????????????
     alphahat = 0;
     betahat  = 0;
     bxhat    = 0;

@@ -1,3 +1,4 @@
+
 function drawAircraft(uu,V,F,patchcolors)
 
     % process inputs to function
@@ -12,177 +13,169 @@ function drawAircraft(uu,V,F,patchcolors)
     psi      = uu(9);       % yaw angle     
     p        = uu(10);       % roll rate
     q        = uu(11);       % pitch rate     
-    r        = uu(12);       % yaw rate     
-    defl1    = uu(13);       % roll rate
-    defl2    = uu(14);       % pitch rate     
-    defl3    = uu(15);       % yaw rate   
-    t        = uu(16);       % time
+    r        = uu(12);       % yaw rate    
+    t        = uu(13);       % time
 
     % define persistent variables 
-    persistent plane_handle1;
-    persistent plane_handle2;
-    persistent plane_handle3;
-    persistent ax_handle;
+    persistent vehicle_handle;
+    persistent Vertices
+    persistent Faces
+    persistent facecolors
     
     % first time function is called, initialize plot and persistent vars
     if t==0,
         figure(1), clf
-        plane_handle1 = drawPlaneBody(V,F,patchcolors,...
-                                               pn,pe,pd,phi,theta,psi,defl1,defl2,defl3,...
+        [Vertices,Faces,facecolors] = defineVehicleBody;
+        vehicle_handle = drawVehicleBody(Vertices,Faces,facecolors,...
+                                               pn,pe,pd,phi,theta,psi,...
                                                [],'normal');
-                                           
-        V = [1000, 0, 0;
-            -1000, 0, 0;
-            -1000, 0, 0;
-             1000, 0, 0];
-        drawGround(V,[],'normal');
-        title('Plane Landing')
+        title('Vehicle')
         xlabel('East')
         ylabel('North')
         zlabel('-Down')
-        view(180,0)  % set the view angle for figure
-        axis([-5,5,-5,200,-2,20]);
-        %axis([-1,3,-5,200,-1,2]);
-        hold on
-        
-        
-        figure(10), clf
-        plane_handle2 = drawPlaneBody(V,F,patchcolors,...
-                                               pn,pe,pd,phi,theta,psi,defl1,defl2,defl3,...
-                                               [],'normal');
-        V = [0, 1000, 0;
-             0,-1000, 0;
-             0,-1000, 0;
-             0, 1000, 0];
-        drawGround(V,[],'normal');
-        title('Plane Landing')
-        xlabel('East')
-        ylabel('North')
-        zlabel('-Down')
-        view(90,0)  % set the view angle for figure
-        axis([-10,10,0,150,-2,20]);
-        hold on
-        
-        figure(11); clf
-        plane_handle3 = drawPlaneBody(V,F,patchcolors,...
-                                               pn,pe,pd,phi,theta,psi,defl1,defl2,defl3,...
-                                               [],'normal');
-        ax_handle=gca;        
-        V = [0, 1000, 0;
-             0,-1000, 0;
-             0,-1000, 0;
-             0, 1000, 0];
-        drawGround(V,[],'normal');
-        title('Plane Landing')
-        xlabel('East')
-        ylabel('North')
-        zlabel('-Down')
-        view(90,0)  % set the view angle for figure
-        axis([pn-5,pn+5,pe-5,pe+5,pd-5,pd+5]);
+        view(32,47)  % set the vieew angle for figure
+        axis([-1000,1000,-1000,1000,-50,1000]);
+        grid on
         hold on
         
     % at every other time step, redraw base and rod
     else 
-        drawPlaneBody(V,F,patchcolors,...
-                           pn,pe,pd,phi,theta,psi,defl1,defl2,defl3,...
-                           plane_handle1);
-        drawPlaneBody(V,F,patchcolors,...
-                           pn,pe,pd,phi,theta,psi,defl1,defl2,defl3,...
-                           plane_handle2);
-        drawPlaneBody(V,F,patchcolors,...
-                           pn,pe,pd,phi,theta,psi,defl1,defl2,defl3,...
-                           plane_handle3);
-        set(ax_handle,'xlim',[pe-5,pe+5],'ylim',[pn-5,pn+5],'zlim',[-pd-5,-pd+5]);
+        drawVehicleBody(Vertices,Faces,facecolors,...
+                           pn,pe,pd,phi,theta,psi,...
+                           vehicle_handle);
     end
 end
 
   
-function handle = drawGround(V,handle,mode)
-%   V = [-100, 100, 0;
-%        -100,-100, 0;
-%         100,-100, 0;
-%         100, 100, 0];
-%   V = [-1000, 0, 0;
-%        -1000, 0, 0;
-%         1000, 0, 0;
-%         1000, 0, 0];
-  F=[1,2,3,4];
-  mygreen = [0, 1, 0];
-  patchcolors=[mygreen];
-  
-  if isempty(handle),
-  handle = patch('Vertices', V, 'Faces', F,...
-                 'FaceVertexCData',patchcolors,...
-                 'FaceColor','flat',...
-                 'EraseMode', mode);
-  else
-    set(handle,'Vertices',V,'Faces',F);
-    drawnow
-  end
-  end
-
-function handle = drawPlaneBody(V,F,patchcolors,...
-                                     pn,pe,pd,phi,theta,psi,defl1,defl2,defl3,...
+%=======================================================================
+% drawVehicle
+% return handle if 3rd argument is empty, otherwise use 3rd arg as handle
+%=======================================================================
+%
+function handle = drawVehicleBody(V,F,patchcolors,...
+                                     pn,pe,pd,phi,theta,psi,...
                                      handle,mode)
-  lv=size(V,1);
-  wrad=.1;
-  wheel=[wrad,0, wrad;
-         wrad,0,-wrad;
-        -wrad,0,-wrad;
-        -wrad,0, wrad];
-  trans1=ones(4,1)*[.5,   0,  .7-wrad-defl1];
-  trans2=ones(4,1)*[-1, 0.5, .45-wrad-defl2];
-  trans3=ones(4,1)*[-1,-0.5, .45-wrad-defl3];
-  
-  F=[F;lv+(1:4);lv+4+(1:4);lv+8+(1:4)];
-  patchcolors=[patchcolors; 1 0 0; 1 0 0; 1 0 0];
-  
-  V=[V;trans1+wheel;trans2+wheel;trans3+wheel];
-  V = rotate(V', phi, theta, psi)';  % rotate spacecraft
-  V = translate(V', pn, pe, pd)';  % translate spacecraft
+  V = rotate(V, phi, theta, psi);  % rotate vehicle
+  V = translate(V, pn, pe, pd);  % translate vehicle
   % transform vertices from NED to XYZ (for matlab rendering)
   R = [...
       0, 1, 0;...
       1, 0, 0;...
       0, 0, -1;...
       ];
-  V = V*R;
+  V = R*V;
   
   if isempty(handle),
-  handle = patch('Vertices', V, 'Faces', F,...
+  handle = patch('Vertices', V', 'Faces', F,...
                  'FaceVertexCData',patchcolors,...
                  'FaceColor','flat',...
                  'EraseMode', mode);
   else
-    set(handle,'Vertices',V,'Faces',F);
+    set(handle,'Vertices',V','Faces',F);
     drawnow
   end
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%
-function XYZ=rotate(XYZ,phi,theta,psi);
-  % define rotation matrix
+function pts=rotate(pts,phi,theta,psi)
+
+  % define rotation matrix (right handed)
   R_roll = [...
           1, 0, 0;...
-          0, cos(phi), -sin(phi);...
-          0, sin(phi), cos(phi)];
+          0, cos(phi), sin(phi);...
+          0, -sin(phi), cos(phi)];
   R_pitch = [...
-          cos(theta), 0, sin(theta);...
+          cos(theta), 0, -sin(theta);...
           0, 1, 0;...
-          -sin(theta), 0, cos(theta)];
+          sin(theta), 0, cos(theta)];
   R_yaw = [...
-          cos(psi), -sin(psi), 0;...
-          sin(psi), cos(psi), 0;...
+          cos(psi), sin(psi), 0;...
+          -sin(psi), cos(psi), 0;...
           0, 0, 1];
-  R = R_yaw*R_pitch*R_roll;
+  R = R_roll*R_pitch*R_yaw;  
+    % note that R above either leaves the vector alone or rotates
+    % a vector in a left handed rotation.  We want to rotate all
+    % points in a right handed rotation, so we must transpose
+  R = R';
+
   % rotate vertices
-  XYZ = R*XYZ;
+  pts = R*pts;
+  
 end
+% end rotateVert
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % translate vertices by pn, pe, pd
-function XYZ = translate(XYZ,pn,pe,pd)
-  XYZ = XYZ + repmat([pn;pe;pd],1,size(XYZ,2));
+function pts = translate(pts,pn,pe,pd)
+
+  pts = pts + repmat([pn;pe;pd],1,size(pts,2));
+  
 end
 
+% end translate
+
+
+%=======================================================================
+% defineVehicleBody
+%=======================================================================
+function [V,F,facecolors] = defineVehicleBody
+
+% Define the vertices (physical location of vertices
+V = [...
+    1.5, 0, 0;...   % pt 1
+    1, .25, -0.25;... % pt 2
+    1, -.25, -0.25;...   % pt 3
+    1, -.25, 0.25;...  % pt 4
+    1, 0.25, 0.25;...  % pt 5
+    -4, 0, 0;...   % pt 6
+    0, -3, 0;...      % pt 7
+    -1.5, -3, 0;...   % pt 8
+    -1.5, 3, 0;...    % pt 9
+    0, 3, 0;...       % pt 10     
+    -3, 1.5, 0;...   % pt 11
+    -4, 1.5, 0;... % pt 12
+    -4, -1.5, 0;...   % pt 13
+    -3, -1.5, 0;...  % pt 14
+    -3, 0, 0;...  % pt 15
+    -4, 0, -1.5;...   % pt 16
+    ]';
+
+V=diag([50,50,50])*V;
+
+% define faces as a list of vertices numbered above
+  F = [...
+        7, 8, 9, 10;...  % wing
+        11, 12, 13, 14;...  % tail
+        16, 15, 6, NaN;...  % tail 2
+        1, 2, 3, NaN;...  % front 1
+        1, 3, 4, NaN;...  % front 2
+        1, 4, 5, NaN;...  % front 3
+        1, 5, 2, NaN;...  % front 4
+        2, 3, 6, NaN;...  % mid 1
+        3, 4, 6, NaN;...  % mid 2
+        6, 4, 5, NaN;...  % mid 3
+        6, 2, 5, NaN;...  % mid 4
+        ];
+
+% define colors for each face    
+  myred = [1, 0, 0];
+  mygreen = [0, 1, 0];
+  myblue = [0, 0, 1];
+  myyellow = [1, 1, 0];
+  mycyan = [0, 1, 1];
+
+  facecolors = [...
+      mygreen;...  % wing
+      mygreen;...  % tail
+      myblue;...  % tail 2
+      myyellow;...  % front 1
+      myyellow;...  % front 2
+      myyellow;...  % front 3
+      myyellow;...  % front 4
+      myblue;...  % mid 1
+      myblue;...  % mid 2
+      myred;...  % mid 3
+      myblue;...  % mid 4
+    ];
+end
   

@@ -1,4 +1,4 @@
-function [sys,x0,str,ts,simStateCompliance] = mav_dynamics(t,x,u,flag,P)
+function [sys,x0,str,ts,simStateCompliance] = mav_dynamics_VTOL(t,x,u,flag,P)
 
 switch flag,
 
@@ -76,7 +76,7 @@ sizes.NumSampleTimes = 1;   % at least one sample time is needed
 sys = simsizes(sizes);
 
 %
-% initialize the initial conditions
+% initialize the initial conditions     ?????? ???????12?????
 %
 x0  = [...
     P.pn0;...
@@ -139,7 +139,23 @@ function sys=mdlDerivatives(t,x,uu,P)
     m     = uu(5);
     n     = uu(6);
     
-%%% ¶¨ÒåÐý×ª¾ØÕó
+% physical parameters of airframe    
+    mass= P.mass;
+    Jx = P.Jx;
+    Jy = P.Jy;
+    Jz = P.Jz;
+    Jxz = P.Jxz;
+    
+    G=Jx*Jz-Jxz^2;
+    G1 = Jxz*(Jx-Jy+Jz)/G;
+    G2 = (Jz*(Jz-Jy)+Jxz^2)/G;
+    G3 = Jz/G;
+    G4 = Jxz/G;
+    G5 = (Jz-Jx)/Jy;
+    G6 = Jxz/ Jy;
+    G7 = ((Jx-Jy)*Jx+Jxz^2)/G;
+    G8 = Jx/G;
+% body -> Nav   Cnb
     C11=cos(theta)*cos(psi);
     C12=sin(phi)*sin(theta)*cos(psi) - cos(phi)*sin(psi);
     C13=cos(phi)*sin(theta)*cos(psi) + sin(phi)*sin(psi);
@@ -151,21 +167,29 @@ function sys=mdlDerivatives(t,x,uu,P)
     C31=-sin(theta);
     C32=sin(phi)*cos(theta);
     C33=cos(phi)*cos(theta);
-%%% 
+
+% 6??? 12????????????????
 
     pndot = C11*u + C12*v + C13*w
     pedot = C21*u + C22*v + C23*w;
     pddot = C31*u + C32*v + C33*w;
-    udot = r*v - q*w + fx/P.mass    %mass=1.534kg
-    vdot = p*w - r*u + fy/P.mass
-    wdot = q*u - p*v + fz/P.mass
+    
+    udot = r*v - q*w + fx/mass    %mass=1.534kg
+    vdot = p*w - r*u + fy/mass
+    wdot = q*u - p*v + fz/mass
+    
     phidot = p + sin(phi)*tan(theta)*q + cos(phi)*tan(theta)*r;
     thetadot = cos(phi)*q - sin(phi)*r;
     psidot = sin(phi)/cos(theta)*p + cos(phi)/cos(theta)*r;
-    pdot = (P.Jz - P.Jy)/P.Jx *q*r + ell/P.Jx ;
-    qdot = (P.Jz - P.Jx)/P.Jy *p*r +   m/P.Jy ;
-    rdot = (P.Jx - P.Jy)/P.Jz *p*q +   n/P.Jz ;
     
+%     pdot = (P.Jz - P.Jy)/P.Jx *q*r + ell/P.Jx ;
+%     qdot = (P.Jz - P.Jx)/P.Jy *p*r +   m/P.Jy ;
+%     rdot = (P.Jx - P.Jy)/P.Jz *p*q +   n/P.Jz ;
+    
+    pdot = G1*p*q - G2*q*r + G3*ell + G4 *n; 
+    qdot = G5*p*r - G6*(p^2-r^2)     + 1/Jy *m;
+    rdot = G7*p*q - G1*q*r + G4*ell  + G8 *n;
+ 
 % P.Jx   = 0.1147 %kg-m^2
 % P.Jy   = 0.0576 %kg-m^2
 % P.Jz   = 0.1712 %kg-m^2

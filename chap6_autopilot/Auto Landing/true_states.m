@@ -4,24 +4,24 @@ function xhat = true_states(uu,P)
 %   - this function will be replaced with a state estimator in a later
 %   chapter.
 %
-% Outputs are:(xhat 表示状态的最优估计值，这个表示来自估计值是x尖尖，带个帽子-hat)
-%   pnhat    - estimated North position,    %导航系北东地 位置3向
+% Outputs are:(xhat ?????????????????????x???????-hat)
+%   pnhat    - estimated North position,    %?????? ??3?
 %   pehat    - estimated East position, 
 %   hhat     - estimated altitude, 
-%   Vahat    - estimated airspeed,          %空速1
-%   alphahat - estimated angle of attack,   %攻角1
-%   betahat  - estimated sideslip angle,    %侧滑角1
-%   phihat   - estimated roll angle,        %横滚角、俯仰角、偏航角3
+%   Vahat    - estimated airspeed,          %??1
+%   alphahat - estimated angle of attack,   %??1
+%   betahat  - estimated sideslip angle,    %???1
+%   phihat   - estimated roll angle,        %???????????3
 %   thetahat - estimated pitch angel, 
 %   chihat   - estimated course, 
-%   phat     - estimated roll rate,         %横滚角、俯仰角、偏航角 速度3
+%   phat     - estimated roll rate,         %??????????? ??3
 %   qhat     - estimated pitch rate, 
 %   rhat     - estimated yaw rate,
-%   Vghat    - estimated ground speed,      %地速对地速率，不是矢量1
-%   wnhat    - estimate of North wind,      %风在北向和东的分量2
+%   Vghat    - estimated ground speed,      %???????????1
+%   wnhat    - estimate of North wind,      %?????????2
 %   wehat    - estimate of East wind
-%   psihat   - estimate of heading angle,   %机头角度1
-%   bxhat    - estimate of x-gyro bias,     %陀螺仪的漂移3
+%   psihat   - estimate of heading angle,   %????1
+%   bxhat    - estimate of x-gyro bias,     %??????3
 %   byhat    - estimate of y-gyro bias,
 %   bzhat    - estimate of z-gyro bias,     
 % 
@@ -29,7 +29,7 @@ function xhat = true_states(uu,P)
 % Modification History:
 %   2/11/2010 - RWB
 %   5/14/2010 - RWB
-%   2017/1/20 - Edison Yang    注释
+%   2017/1/20 - Edison Yang    ??
 
     % process inputs
     NN = 0;
