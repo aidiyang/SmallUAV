@@ -78,6 +78,7 @@ sys = simsizes(sizes);
 %
 % initialize the initial conditions     ?????? ???????12?????
 %
+% 2017/2/23
 x0  = [...
     P.pn0;...
     P.pe0;...
@@ -184,7 +185,7 @@ function sys=mdlDerivatives(t,x,uu,P)
     
 %     pdot = (P.Jz - P.Jy)/P.Jx *q*r + ell/P.Jx ;
 %     qdot = (P.Jz - P.Jx)/P.Jy *p*r +   m/P.Jy ;
-%     rdot = (P.Jx - P.Jy)/P.Jz *p*q +   n/P.Jz ;
+%     rdot = (P.Jx - P.Jy)/P.Jz *p*q +   n/P.Jz ;   %?????????????
     
     pdot = G1*p*q - G2*q*r + G3*ell + G4 *n; 
     qdot = G5*p*r - G6*(p^2-r^2)     + 1/Jy *m;
